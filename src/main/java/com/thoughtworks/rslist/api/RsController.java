@@ -14,9 +14,9 @@ public class RsController {
 
     private List<RsEvent> initRsList() {
         List<RsEvent> tempList = new ArrayList<>();
-        tempList.add(new RsEvent("第一条事件","无分类"));
-        tempList.add(new RsEvent("第二条事件","无分类"));
-        tempList.add(new RsEvent("第三条事件","无分类"));
+        tempList.add(new RsEvent("第一条事件", "无分类"));
+        tempList.add(new RsEvent("第二条事件", "无分类"));
+        tempList.add(new RsEvent("第三条事件", "无分类"));
 
         return tempList;
     }
