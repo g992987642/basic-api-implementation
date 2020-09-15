@@ -20,5 +20,10 @@ public class RsController {
     public String getRsEventByRange(@RequestParam int start,@RequestParam int end){
         return rsList.subList(start-1,end).toString();
     }
+    @GetMapping("/rs/list")
+    public String getAllRsEvent(){
+        return rsList.toString();
+    }
+
 
 }

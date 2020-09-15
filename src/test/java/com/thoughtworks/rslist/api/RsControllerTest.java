@@ -40,7 +40,12 @@ class RsControllerTest {
 
     }
 
-
+    @Test
+    void should_get_all_event() throws Exception {
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("[第一条事件, 第二条事件, 第三条事件]"));
+    }
 
 
 
