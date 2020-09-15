@@ -44,5 +44,15 @@ public class RsController {
         rsList.add(rsEvent);
     }
 
+    @PutMapping("/rs/event")
+    public void modifyOneRsEvent(@RequestParam int index,@RequestParam(required = false) String eventName,@RequestParam String keyWord) throws JsonProcessingException {
+        RsEvent rsEvent = rsList.get(index-1);
+        if(eventName!=null){
+            rsEvent.setEventName(eventName);
+        }
+        if(keyWord!=null){
+            rsEvent.setKeyWord(keyWord);
+        }
+    }
 
 }
