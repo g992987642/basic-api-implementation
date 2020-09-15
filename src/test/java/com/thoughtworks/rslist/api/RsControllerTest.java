@@ -94,7 +94,7 @@ class RsControllerTest {
     }
 
     @Test
-    void should_modify_event() throws Exception {
+    void should_modify_one_event() throws Exception {
         mockMVC.perform(get("/rs/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(3)))
@@ -120,6 +120,31 @@ class RsControllerTest {
 
     }
 
+    @Test
+    void should_delete_one_event() throws Exception {
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)))
+                .andExpect(jsonPath("$[0].eventName",is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyWord",is("无分类")))
+                .andExpect(jsonPath("$[1].eventName",is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyWord",is("无分类")))
+                .andExpect(jsonPath("$[2].eventName",is("第三条事件")))
+                .andExpect(jsonPath("$[2].keyWord",is("无分类")));
+
+        mockMVC.perform(delete("/rs/event/2"))
+                .andExpect(status().isOk());
+
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(2)))
+                .andExpect(jsonPath("$[0].eventName",is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyWord",is("无分类")))
+                .andExpect(jsonPath("$[1].eventName",is("第三条事件")))
+                .andExpect(jsonPath("$[1].keyWord",is("无分类")));
+
+
+    }
 
 
 

@@ -55,4 +55,9 @@ public class RsController {
         }
     }
 
+    @DeleteMapping("/rs/event/{index}")
+    public void deleteOneRsEvent(@PathVariable int index) throws JsonProcessingException {
+       rsList.remove(index-1);
+    }
+
 }
