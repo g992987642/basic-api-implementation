@@ -13,7 +13,7 @@ public class RsEvent {
     private String eventName;
     private String keyWord;
     @Valid
-    private User user;
+    private UserDto userDto;
 
     public RsEvent(String eventName, String keyWord) {
         this.eventName = eventName;

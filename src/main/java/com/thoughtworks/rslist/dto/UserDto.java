@@ -12,7 +12,7 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class User {
+public class UserDto {
     @NotEmpty
     @Size(max = 8)
     String userName;

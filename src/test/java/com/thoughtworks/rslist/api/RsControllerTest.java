@@ -2,7 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
-import com.thoughtworks.rslist.dto.User;
+import com.thoughtworks.rslist.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -150,8 +150,8 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_userName_is_null() throws Exception {
 
-       User user= new User(null,18,"男","12345678@qq.com","12345678910");
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+       UserDto userDto = new UserDto(null,18,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
@@ -162,8 +162,8 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_size_of_userName_over_8() throws Exception {
 
-        User user= new User("123456789",18,"男","12345678@qq.com","12345678910");
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        UserDto userDto = new UserDto("123456789",18,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
@@ -173,8 +173,8 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_user_age_less_than_18() throws Exception {
 
-        User user= new User("12345678",17,"男","12345678@qq.com","12345678910");
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        UserDto userDto = new UserDto("12345678",17,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
@@ -184,8 +184,8 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_user_age_more_than_100() throws Exception {
 
-        User user= new User("12345678",101,"男","12345678@qq.com","12345678910");
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        UserDto userDto = new UserDto("12345678",101,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
@@ -195,8 +195,8 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_user_gender_is_null() throws Exception {
 
-        User user= new User("12345678",100,null,"12345678@qq.com","12345678910");
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        UserDto userDto = new UserDto("12345678",100,null,"12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
@@ -206,8 +206,8 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_user_email_is_not_conform_shares() throws Exception {
 
-        User user= new User("12345678",100,"男","12345678qq.com","12345678910");
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        UserDto userDto = new UserDto("12345678",100,"男","12345678qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
@@ -217,8 +217,8 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_user_phone_is_not_start_with_1() throws Exception {
 
-        User user= new User("12345678",100,"男","12345678qq.com","22345678910");
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        UserDto userDto = new UserDto("12345678",100,"男","12345678qq.com","22345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
@@ -228,12 +228,14 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_size_of_user_phone_is_not_11() throws Exception {
 
-        User user= new User("12345678",100,"男","12345678qq.com","123456789101");
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        UserDto userDto = new UserDto("12345678",100,"男","12345678qq.com","123456789101");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+
 
 }
