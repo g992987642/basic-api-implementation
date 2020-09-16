@@ -217,7 +217,7 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_user_phone_is_not_start_with_1() throws Exception {
 
-        UserDto userDto = new UserDto("12345678",100,"男","12345678qq.com","22345678910");
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","22345678910");
         RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
@@ -228,7 +228,7 @@ class RsControllerTest {
     @Test
     void should_not_add_one_rs_when_size_of_user_phone_is_not_11() throws Exception {
 
-        UserDto userDto = new UserDto("12345678",100,"男","12345678qq.com","123456789101");
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","123456789101");
         RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", userDto);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);

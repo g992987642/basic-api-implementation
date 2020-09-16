@@ -22,16 +22,103 @@ class UserControllerTest {
 
     @Autowired
     MockMvc mockMVC;
-
     @Test
-    void should_not_add_one_user_when_user_phone_is_not_start_with_1() throws Exception {
+    void should_not_add_one_user_when_user_name_is_null() throws Exception {
 
-        UserDto userDto = new UserDto("12345678",100,"男","12345678qq.com","22345678910");
+        UserDto userDto = new UserDto(null,100,"男","12345678@qq.com","12345678910");
 
         ObjectMapper objectMapper=new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(userDto);
         mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+    @Test
+    void should_not_add_one_user_when_size_of_user_name_is_more_than_8() throws Exception {
+
+        UserDto userDto = new UserDto("123456789",100,"男","12345678@qq.com","12345678910");
+
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_add_one_user_when_user_age_is_over_100() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",101,"男","12345678@qq.com","12345678910");
+
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_add_one_user_when_user_age_is_less_than_18() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",17,"男","12345678@qq.com","12345678910");
+
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_add_one_user_when_user_gender_is_null() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",18,null,"12345678@qq.com","12345678910");
+
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_add_one_user_when_user_email_is_not_conform_shares() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",18,null,"12345678@qq.com","12345678910");
+
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
+
+
+    @Test
+    void should_not_add_one_user_when_user_phone_is_not_start_with_1() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","22345678910");
+
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void should_not_add_one_user_when_size_of_user_phone_is_not_11() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","123456789101");
+
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_add_one_user_() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","12345678910");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
 }

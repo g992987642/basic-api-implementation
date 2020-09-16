@@ -14,14 +14,7 @@ public class UserController {
 
     @PostMapping("/user/register")
     public void register(@RequestBody @Valid UserDto userDto){
-        boolean isRegisterd=false;
-        for(UserDto registerUser : UserList.userList){
-            if(registerUser.getUserName().equals(userDto.getUserName())){
-                isRegisterd=true;
-            }
-        }
-        if(!isRegisterd){
             UserList.userList.add(userDto);
-        }
+
     }
 }
