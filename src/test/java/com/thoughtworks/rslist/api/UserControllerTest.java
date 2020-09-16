@@ -11,8 +11,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -120,5 +123,18 @@ class UserControllerTest {
         mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void should_get_all_users() throws Exception {
+        mockMVC.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userName",is("guhao")))
+                .andExpect(jsonPath("$[0].age",is(18)))
+                .andExpect(jsonPath("$[0].gender",is("男")))
+                .andExpect(jsonPath("$[0].email",is("12345678@qq.com")))
+                .andExpect(jsonPath("$[0].phone",is("12345678910")));
+
+    }
+
 
 }
