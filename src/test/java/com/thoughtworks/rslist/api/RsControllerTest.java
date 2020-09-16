@@ -289,4 +289,11 @@ class RsControllerTest {
     }
 
 
+    @Test
+    void should_return_invalid_request_param_when_start_or_end_out_of_index() throws Exception {
+        mockMVC.perform(get("/rs/event?start=-1&end=3"))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error",is("invalid request param")));
+    }
+
 }

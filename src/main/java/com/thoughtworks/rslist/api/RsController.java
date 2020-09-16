@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.RsEventWithoutUser;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.UserList;
+import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,9 @@ public class RsController {
 
     @GetMapping("/rs/event")
     public ResponseEntity  getRsEventByRange(@RequestParam int start, @RequestParam int end) {
+        if(start<1||start>end||end>=rsList.size()){
+            throw new InvalidRequestParamException();
+        }
         List<RsEvent> rsEvents = rsList.subList(start - 1, end);
         List<RsEventWithoutUser> rsEventWithoutUsers = getRsEventWithoutUsers(rsEvents);
         return  ResponseEntity.ok().body(rsEventWithoutUsers);
