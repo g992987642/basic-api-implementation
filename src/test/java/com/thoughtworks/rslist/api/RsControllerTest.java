@@ -79,7 +79,8 @@ class RsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(3)));
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().is(201))
+                .andExpect(header().string("index", "3"));
 
         mockMVC.perform(get("/rs/list"))
                 .andExpect(status().isOk())
@@ -251,7 +252,7 @@ class RsControllerTest {
         int beforeSize=UserList.userList.size();
         Assertions.assertEquals(1,beforeSize);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().is(201));
         int afterSize=UserList.userList.size();
         Assertions.assertEquals(1,afterSize);
         mockMVC.perform(get("/rs/list"))
@@ -272,7 +273,7 @@ class RsControllerTest {
         int beforeSize=UserList.userList.size();
         Assertions.assertEquals(1,beforeSize);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().is(201));
         int afterSize=UserList.userList.size();
         Assertions.assertEquals(2,afterSize);
         mockMVC.perform(get("/rs/list"))

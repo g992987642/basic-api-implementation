@@ -58,7 +58,7 @@ public class RsController {
                 UserList.userList.add(userDto);
             }
         }
-        return  ResponseEntity.ok().build();
+        return  ResponseEntity.status(201).header("index",String.valueOf(rsList.size()-1)).build();
     }
 
     @PutMapping("/rs/event")
