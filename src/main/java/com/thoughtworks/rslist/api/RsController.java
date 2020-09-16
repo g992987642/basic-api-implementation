@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoughtworks.rslist.dto.RsEvent;
+import com.thoughtworks.rslist.dto.RsEventWithoutUser;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.UserList;
 import org.springframework.http.RequestEntity;
@@ -28,20 +29,26 @@ public class RsController {
 
 
     @GetMapping("/rs/{index}")
-    public ResponseEntity<RsEvent> getRsEvent(@PathVariable int index) {
-
-        return ResponseEntity.ok().body(rsList.get(index - 1));
+    public ResponseEntity getRsEvent(@PathVariable int index) {
+        RsEvent rsEvent = rsList.get(index - 1);
+        RsEventWithoutUser rsEventWithoutUser=new RsEventWithoutUser(rsEvent.getEventName(), rsEvent.getKeyWord());
+        return ResponseEntity.ok().body(rsEventWithoutUser);
     }
 
     @GetMapping("/rs/event")
-    public ResponseEntity<List<RsEvent>>  getRsEventByRange(@RequestParam int start, @RequestParam int end) {
-        return  ResponseEntity.ok().body(rsList.subList(start - 1, end));
+    public ResponseEntity  getRsEventByRange(@RequestParam int start, @RequestParam int end) {
+        List<RsEvent> rsEvents = rsList.subList(start - 1, end);
+        List<RsEventWithoutUser> rsEventWithoutUsers = getRsEventWithoutUsers(rsEvents);
+        return  ResponseEntity.ok().body(rsEventWithoutUsers);
     }
 
     @GetMapping("/rs/list")
-    public ResponseEntity<List<RsEvent>> getAllRsEvent() {
-        return  ResponseEntity.ok().body( rsList);
+    public ResponseEntity getAllRsEvent() {
+        List<RsEventWithoutUser> rsEventWithoutUsers = getRsEventWithoutUsers(rsList);
+        return  ResponseEntity.ok().body(rsEventWithoutUsers);
     }
+
+
 
     @PostMapping("/rs/event")
     public ResponseEntity addOneRsEvent(@RequestBody @Valid RsEvent rsEvent) throws JsonProcessingException {
@@ -79,4 +86,13 @@ public class RsController {
         return  ResponseEntity.ok().build();
     }
 
+
+    private List<RsEventWithoutUser> getRsEventWithoutUsers(List<RsEvent> rsList) {
+        List<RsEventWithoutUser> rsEventWithoutUsers = new ArrayList<>();
+        for (RsEvent rsEvent : rsList) {
+            RsEventWithoutUser rsEventWithoutUser = new RsEventWithoutUser(rsEvent.getEventName(), rsEvent.getKeyWord());
+            rsEventWithoutUsers.add(rsEventWithoutUser);
+        }
+        return rsEventWithoutUsers;
+    }
 }
