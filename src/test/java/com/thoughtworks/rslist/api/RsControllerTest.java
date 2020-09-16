@@ -246,4 +246,18 @@ class RsControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void should_not_add_one_rs_when_size_of_user_phone_is_not_11() throws Exception {
+
+        User user= new User("12345678",100,"男","12345678qq.com","123456789101");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)));
+        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
 }
