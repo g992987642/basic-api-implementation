@@ -44,15 +44,17 @@ public class RsController {
     public void addOneRsEvent(@RequestBody @Valid RsEvent rsEvent) throws JsonProcessingException {
         rsList.add(rsEvent);
         UserDto userDto = rsEvent.getUserDto();
-        boolean isRegisterd=false;
-       for(UserDto registerUserDto : UserList.userList){
-           if(registerUserDto.getUserName().equals(userDto.getUserName())){
-               isRegisterd=true;
-           }
-       }
-       if(!isRegisterd){
-           UserList.userList.add(userDto);
-       }
+        if(userDto!=null){
+            boolean isRegisterd=false;
+            for(UserDto registerUserDto : UserList.userList){
+                if(registerUserDto.getUserName().equals(userDto.getUserName())){
+                    isRegisterd=true;
+                }
+            }
+            if(!isRegisterd){
+                UserList.userList.add(userDto);
+            }
+        }
     }
 
     @PutMapping("/rs/event")

@@ -3,6 +3,8 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.dto.UserList;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -234,6 +236,36 @@ class RsControllerTest {
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_add_one_user_to_userList_When_user_is_registerd() throws Exception {
+
+        UserDto user= new UserDto("guhao",18,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        int beforeSize=UserList.userList.size();
+        Assertions.assertEquals(1,beforeSize);
+        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        int afterSize=UserList.userList.size();
+        Assertions.assertEquals(1,afterSize);
+    }
+
+    @Test
+    void should_not_add_one_user_to_userList() throws Exception {
+
+        UserDto user= new UserDto("guhao1",18,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        int beforeSize=UserList.userList.size();
+        Assertions.assertEquals(1,beforeSize);
+        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        int afterSize=UserList.userList.size();
+        Assertions.assertEquals(2,afterSize);
     }
 
 
