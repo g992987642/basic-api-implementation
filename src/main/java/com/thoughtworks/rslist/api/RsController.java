@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.RsEventWithoutUser;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.UserList;
+import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,9 @@ public class RsController {
 
     @GetMapping("/rs/{index}")
     public ResponseEntity getRsEvent(@PathVariable int index) {
+        if(index<1||index>rsList.size()){
+            throw new InvalidIndexException();
+        }
         RsEvent rsEvent = rsList.get(index - 1);
         RsEventWithoutUser rsEventWithoutUser=new RsEventWithoutUser(rsEvent.getEventName(), rsEvent.getKeyWord());
         return ResponseEntity.ok().body(rsEventWithoutUser);

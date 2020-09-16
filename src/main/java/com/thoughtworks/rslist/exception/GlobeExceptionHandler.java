@@ -13,6 +13,10 @@ public class GlobeExceptionHandler {
             CommentError commentError =new CommentError("invalid request param");
             return ResponseEntity.badRequest().body(commentError);
         }
+        if(ex instanceof  InvalidIndexException){
+            CommentError commentError =new CommentError("invalid index");
+            return ResponseEntity.badRequest().body(commentError);
+        }
 
         CommentError commentError =new CommentError("invalid user");
         return  ResponseEntity.badRequest().body(commentError);

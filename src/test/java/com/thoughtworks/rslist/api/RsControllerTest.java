@@ -296,4 +296,11 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.error",is("invalid request param")));
     }
 
+    @Test
+    void should_return_invalid_request_param_when_index_is_not_invalid() throws Exception {
+        mockMVC.perform(get("/rs/0"))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error",is("invalid index")));
+    }
+
 }
