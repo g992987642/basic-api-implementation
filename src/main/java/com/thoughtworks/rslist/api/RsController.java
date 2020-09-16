@@ -2,15 +2,23 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.corba.se.impl.orbutil.StackImpl;
 import com.thoughtworks.rslist.dto.RsEvent;
+import com.thoughtworks.rslist.dto.User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class RsController {
     private List<RsEvent> rsList = initRsList();
+
+       static  List<User> userList=new ArrayList<>();
+    static{
+        userList.add(new User("guhao",18,"男","12345678@qq.com","12345678910"));
+    }
 
     private List<RsEvent> initRsList() {
         List<RsEvent> tempList = new ArrayList<>();
@@ -38,10 +46,12 @@ public class RsController {
     }
 
     @PostMapping("/rs/event")
-    public void addOneRsEvent(@RequestBody String rsEventStr) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        RsEvent rsEvent = objectMapper.readValue(rsEventStr, RsEvent.class);
+    public void addOneRsEvent(@RequestBody @Valid RsEvent rsEvent) throws JsonProcessingException {
         rsList.add(rsEvent);
+        User user = rsEvent.getUser();
+        if(!userList.contains(user)){
+            userList.add(user);
+        }
     }
 
     @PutMapping("/rs/event")

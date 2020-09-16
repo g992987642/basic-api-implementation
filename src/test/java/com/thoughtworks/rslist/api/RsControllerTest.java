@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
+import com.thoughtworks.rslist.dto.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -144,6 +145,22 @@ class RsControllerTest {
 
 
     }
+
+
+    @Test
+    void should_not_add_one_rs_when_userName_is_null() throws Exception {
+
+       User user= new User(null,18,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)));
+        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
 
 
 
