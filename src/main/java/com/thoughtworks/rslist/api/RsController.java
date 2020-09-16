@@ -5,10 +5,12 @@ import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.RsEventWithoutUser;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.UserList;
+import com.thoughtworks.rslist.exception.CommentError;
 import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -42,7 +44,7 @@ public class RsController {
 
     @GetMapping("/rs/event")
     public ResponseEntity  getRsEventByRange(@RequestParam int start, @RequestParam int end) {
-        if(start<1||start>end||end>=rsList.size()){
+        if(start<1||start>end||end>rsList.size()){
             throw new InvalidRequestParamException();
         }
         List<RsEvent> rsEvents = rsList.subList(start - 1, end);
@@ -92,6 +94,19 @@ public class RsController {
     public ResponseEntity deleteOneRsEvent(@PathVariable int index) throws JsonProcessingException {
        rsList.remove(index-1);
         return  ResponseEntity.ok().build();
+    }
+
+
+    @ExceptionHandler
+    public ResponseEntity handleException(Exception ex){
+
+        if(ex instanceof MethodArgumentNotValidException){
+            CommentError commentError =new CommentError("invalid param");
+            return ResponseEntity.badRequest().body(commentError);
+        }
+
+        CommentError commentError =new CommentError("invalid user");
+        return  ResponseEntity.badRequest().body(commentError);
     }
 
 

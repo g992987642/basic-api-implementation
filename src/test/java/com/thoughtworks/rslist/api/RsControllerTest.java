@@ -303,4 +303,16 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.error",is("invalid index")));
     }
 
+    @Test
+    void should_return_invalid_param_when_rsEvent_can_not_pass_valid() throws Exception {
+
+        UserDto userDto = new UserDto("12345678910", 100, "男", "12345678@qq.com", "22345678910");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", userDto);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error",is("invalid param")));
+    }
+
 }
