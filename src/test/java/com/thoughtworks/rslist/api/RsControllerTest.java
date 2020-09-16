@@ -245,12 +245,18 @@ class RsControllerTest {
         RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)));
         int beforeSize=UserList.userList.size();
         Assertions.assertEquals(1,beforeSize);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         int afterSize=UserList.userList.size();
         Assertions.assertEquals(1,afterSize);
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(4)));
     }
 
     @Test
@@ -260,12 +266,18 @@ class RsControllerTest {
         RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)));
         int beforeSize=UserList.userList.size();
         Assertions.assertEquals(1,beforeSize);
         mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         int afterSize=UserList.userList.size();
         Assertions.assertEquals(2,afterSize);
+        mockMVC.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(4)));
     }
 
 
