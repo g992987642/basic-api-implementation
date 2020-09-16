@@ -3,13 +3,12 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.UserList;
+import com.thoughtworks.rslist.exception.CommentError;
 import org.apache.catalina.User;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -25,4 +24,11 @@ public class UserController {
     public ResponseEntity getUsers(){
         return ResponseEntity.ok().body(UserList.userList);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity handleException(MethodArgumentNotValidException ex){
+            CommentError commentError =new CommentError("invalid user");
+            return ResponseEntity.badRequest().body(commentError);
+    }
+
 }

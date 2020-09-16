@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobeExceptionHandler {
-    @ExceptionHandler
+    @ExceptionHandler({InvalidRequestParamException.class,InvalidIndexException.class})
     public ResponseEntity handleException(Exception ex){
 
         if(ex instanceof InvalidRequestParamException){
@@ -18,8 +18,8 @@ public class GlobeExceptionHandler {
             return ResponseEntity.badRequest().body(commentError);
         }
 
-        CommentError commentError =new CommentError("invalid user");
-        return  ResponseEntity.badRequest().body(commentError);
+        CommentError commentError =new CommentError("something wrong");
+        return ResponseEntity.badRequest().body(commentError);
 
     }
 

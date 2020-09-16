@@ -97,16 +97,11 @@ public class RsController {
     }
 
 
-    @ExceptionHandler
-    public ResponseEntity handleException(Exception ex){
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity handleException(MethodArgumentNotValidException ex){
 
-        if(ex instanceof MethodArgumentNotValidException){
             CommentError commentError =new CommentError("invalid param");
             return ResponseEntity.badRequest().body(commentError);
-        }
-
-        CommentError commentError =new CommentError("invalid user");
-        return  ResponseEntity.badRequest().body(commentError);
     }
 
 

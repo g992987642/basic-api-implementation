@@ -133,8 +133,19 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].user_gender",is("男")))
                 .andExpect(jsonPath("$[0].user_email",is("12345678@qq.com")))
                 .andExpect(jsonPath("$[0].user_phone",is("12345678910")));
-
     }
+
+    @Test
+    void should_return_invalid_user_when_user_can_not_pass_valid() throws Exception {
+
+        UserDto userDto = new UserDto("12345678123124",100,"男","12345678@qq.com","12345678910");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error",is("invalid user")));
+    }
+
 
 
 }
