@@ -128,11 +128,11 @@ class UserControllerTest {
     void should_get_all_users() throws Exception {
         mockMVC.perform(get("/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].userName",is("guhao")))
-                .andExpect(jsonPath("$[0].age",is(18)))
-                .andExpect(jsonPath("$[0].gender",is("男")))
-                .andExpect(jsonPath("$[0].email",is("12345678@qq.com")))
-                .andExpect(jsonPath("$[0].phone",is("12345678910")));
+                .andExpect(jsonPath("$[0].user_name",is("guhao")))
+                .andExpect(jsonPath("$[0].user_age",is(18)))
+                .andExpect(jsonPath("$[0].user_gender",is("男")))
+                .andExpect(jsonPath("$[0].user_email",is("12345678@qq.com")))
+                .andExpect(jsonPath("$[0].user_phone",is("12345678910")));
 
     }
 
