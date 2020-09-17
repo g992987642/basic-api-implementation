@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.UserList;
+import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
@@ -421,6 +422,40 @@ class RsControllerTest {
     }
 
 
+
+    @Test
+    void should_delete_all_rsEvent_when_userId_is_same() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .userName("guhao")
+                .age(18)
+                .email("1234123@qq.com")
+                .gender("男")
+                .phone("12345678910")
+                .voteNum(10)
+                .build();
+        UserEntity userEntity = CommonUtils.convertUserDtoToEntity(userDto);
+        userRepository.save(userEntity);
+
+        RsEvent rsEvent=  RsEvent.builder().eventName("热搜事件名称1")
+                .keyWord("关键字")
+                .userId(1)
+                .userDto(userDto)
+                .build();
+        RsEventEntity rsEventEntity1 = CommonUtils.converRsDtoToEntity(rsEvent);
+        RsEvent rsEvent2=  RsEvent.builder().eventName("热搜事件名称2")
+                .keyWord("关键字")
+                .userId(1)
+                .userDto(userDto)
+                .build();
+        RsEventEntity rsEventEntity2 = CommonUtils.converRsDtoToEntity(rsEvent);
+        rsEventRepository.save(rsEventEntity1);
+        rsEventRepository.save(rsEventEntity2);
+
+        mockMVC.perform(delete("/rs/event/1"))
+                .andExpect(status().is(200));
+        List<RsEventEntity> rsEvents = rsEventRepository.findAll();
+        assertEquals(0,rsEvents.size());
+    }
 
 
 }

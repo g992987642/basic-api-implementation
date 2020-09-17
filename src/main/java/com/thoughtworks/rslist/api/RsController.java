@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,9 +104,11 @@ public class RsController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/rs/event/{index}")
-    public ResponseEntity deleteOneRsEvent(@PathVariable int index) throws JsonProcessingException {
-        rsList.remove(index - 1);
+    @DeleteMapping("/rs/event/{id}")
+    @Transactional
+    public ResponseEntity deleteEventById(@PathVariable int id)  {
+       // userRepository.deleteById(id);
+        userRepository.deleteAllById(id);
         return ResponseEntity.ok().build();
     }
 

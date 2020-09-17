@@ -23,6 +23,6 @@ public class RsEventEntity {
     private String eventName;
     private String keyword;
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @JoinColumn(name = "user_id" )
+    private UserEntity userEntity;
 }
