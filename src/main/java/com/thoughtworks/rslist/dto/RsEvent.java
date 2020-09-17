@@ -43,9 +43,11 @@ public class RsEvent {
     public void setKeyWord(String keyWord) {
         this.keyWord = keyWord;
     }
+
     public UserDto getUserDto() {
         return userDto;
     }
+
     public void setUserDto(UserDto userDto) {
         this.userDto = userDto;
     }
