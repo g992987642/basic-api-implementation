@@ -19,7 +19,7 @@ public class UserEntity {
     @GeneratedValue
     private Integer id;
     @Column(name ="name")
-    private String userNmae;
+    private String userName;
     private  String gender;
     private int age;
     private  String email;

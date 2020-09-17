@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.entity.UserEntity;
@@ -169,7 +170,50 @@ class UserControllerTest {
                 .andExpect(status().isOk());
         List<UserEntity> users = userRepository.findAll();
         assertEquals(1,users.size());
-        assertEquals("12345678",users.get(0).getUserNmae());
+        assertEquals("12345678",users.get(0).getUserName());
+    }
+
+    @Test
+    void should_get_a_user_by_id_from_Mysql() throws Exception {
+        UserEntity userEntity=UserEntity.builder()
+                .userName("guhao")
+                .age(18)
+                .email("1234123@qq.com")
+                .gender("男")
+                .phone("12345678910")
+                .voteNum(10)
+                .build();
+
+        userRepository.save(userEntity);
+
+        mockMVC.perform(get("/user/1")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id",is(userEntity.getId())))
+                .andExpect(jsonPath("$.userName",is(userEntity.getUserName())))
+                .andExpect(jsonPath("$.age",is(userEntity.getAge())))
+                .andExpect(jsonPath("$.email",is(userEntity.getEmail())))
+                .andExpect(jsonPath("$.gender",is(userEntity.getGender())))
+                .andExpect(jsonPath("$.phone",is(userEntity.getPhone())))
+                .andExpect(jsonPath("$.voteNum",is(userEntity.getVoteNum())));
+
+
+    }
+
+    @Test
+    void should_not_get_a_user_when_id_is_not_exist() throws Exception {
+        UserEntity userEntity=UserEntity.builder()
+                .userName("guhao")
+                .age(18)
+                .email("1234123@qq.com")
+                .gender("男")
+                .phone("12345678910")
+                .voteNum(10)
+                .build();
+
+        userRepository.save(userEntity);
+
+        mockMVC.perform(get("/user/2")).andExpect(status().isNoContent());
+
+
     }
 
 
