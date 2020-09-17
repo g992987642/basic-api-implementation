@@ -3,6 +3,10 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.UserRepository;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +31,13 @@ class UserControllerTest {
 
     @Autowired
     MockMvc mockMVC;
+    @Autowired
+    UserRepository userRepository;
+
+    @BeforeEach
+    void initDataBase (){
+        userRepository.deleteAll();
+    }
     @Test
     void should_not_add_one_user_when_user_name_is_null() throws Exception {
 
@@ -144,6 +157,19 @@ class UserControllerTest {
         mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.error",is("invalid user")));
+    }
+
+    @Test
+    void should_add_user_to_Mysql() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","12345678910",10);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userDto);
+        mockMVC.perform(post("/user/register").content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        List<UserEntity> users = userRepository.findAll();
+        assertEquals(1,users.size());
+        assertEquals("12345678",users.get(0).getUserNmae());
     }
 
 
