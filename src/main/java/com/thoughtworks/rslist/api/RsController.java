@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.RsEventWithoutUser;
@@ -29,23 +30,24 @@ public class RsController {
 
 
     @GetMapping("/rs/{index}")
+    @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity getRsEvent(@PathVariable int index) {
         RsEvent rsEvent = rsList.get(index - 1);
-        RsEventWithoutUser rsEventWithoutUser=new RsEventWithoutUser(rsEvent.getEventName(), rsEvent.getKeyWord());
-        return ResponseEntity.ok().body(rsEventWithoutUser);
+        return ResponseEntity.ok().body(rsEvent);
     }
 
     @GetMapping("/rs/event")
+    @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity  getRsEventByRange(@RequestParam int start, @RequestParam int end) {
         List<RsEvent> rsEvents = rsList.subList(start - 1, end);
-        List<RsEventWithoutUser> rsEventWithoutUsers = getRsEventWithoutUsers(rsEvents);
-        return  ResponseEntity.ok().body(rsEventWithoutUsers);
+        return  ResponseEntity.ok().body(rsEvents);
     }
 
     @GetMapping("/rs/list")
+    @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity getAllRsEvent() {
-        List<RsEventWithoutUser> rsEventWithoutUsers = getRsEventWithoutUsers(rsList);
-        return  ResponseEntity.ok().body(rsEventWithoutUsers);
+
+        return  ResponseEntity.ok().body(rsList);
     }
 
 
