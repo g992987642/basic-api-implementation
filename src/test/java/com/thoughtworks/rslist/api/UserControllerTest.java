@@ -20,8 +20,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -208,12 +207,27 @@ class UserControllerTest {
                 .phone("12345678910")
                 .voteNum(10)
                 .build();
+        userRepository.save(userEntity);
+        mockMVC.perform(get("/user/2")).andExpect(status().isNoContent());
+    }
 
+    @Test
+    void should_delete_a_user() throws Exception {
+        UserEntity userEntity=UserEntity.builder()
+                .userName("guhao")
+                .age(18)
+                .email("1234123@qq.com")
+                .gender("男")
+                .phone("12345678910")
+                .voteNum(10)
+                .build();
         userRepository.save(userEntity);
 
-        mockMVC.perform(get("/user/2")).andExpect(status().isNoContent());
-
-
+        List<UserEntity> beforDelete = userRepository.findAll();
+        mockMVC.perform(delete("/user/1")).andExpect(status().isOk());
+        List<UserEntity> afterDelete = userRepository.findAll();
+        assertEquals(1,beforDelete.size());
+        assertEquals(0,afterDelete.size());
     }
 
 

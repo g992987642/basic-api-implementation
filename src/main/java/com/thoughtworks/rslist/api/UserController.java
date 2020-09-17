@@ -47,10 +47,15 @@ public class UserController {
         if(!user.isPresent()){
             return ResponseEntity.noContent().build();
         }
-
         return ResponseEntity.ok().body(user);
     }
 
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity deleteUsersById(@PathVariable int id){
+
+        userRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleException(MethodArgumentNotValidException ex){
