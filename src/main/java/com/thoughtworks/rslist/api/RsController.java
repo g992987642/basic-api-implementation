@@ -1,8 +1,8 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoughtworks.rslist.dto.RsEvent;
-import com.thoughtworks.rslist.dto.RsEventWithoutUser;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.UserList;
 import com.thoughtworks.rslist.exception.CommentError;
@@ -10,7 +10,6 @@ import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -36,30 +35,32 @@ public class RsController {
 
 
     @GetMapping("/rs/{index}")
+    @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity getRsEvent(@PathVariable int index) {
-        if (index < 1 || index > rsList.size()) {
-            throw new InvalidIndexException();
+        if(index<=0||index>rsList.size()){
+            throw  new InvalidIndexException();
         }
         RsEvent rsEvent = rsList.get(index - 1);
-        RsEventWithoutUser rsEventWithoutUser = new RsEventWithoutUser(rsEvent.getEventName(), rsEvent.getKeyWord());
-        return ResponseEntity.ok().body(rsEventWithoutUser);
+        return ResponseEntity.ok().body(rsEvent);
     }
 
     @GetMapping("/rs/event")
-    public ResponseEntity getRsEventByRange(@RequestParam int start, @RequestParam int end) {
-        if (start < 1 || start > end || end > rsList.size()) {
+    @JsonView(RsEvent.RsViewWithoutUser.class)
+    public ResponseEntity  getRsEventByRange(@RequestParam int start, @RequestParam int end) {
+        if(start<=0||start>end||end>rsList.size()){
             throw new InvalidRequestParamException();
         }
         List<RsEvent> rsEvents = rsList.subList(start - 1, end);
-        List<RsEventWithoutUser> rsEventWithoutUsers = getRsEventWithoutUsers(rsEvents);
-        return ResponseEntity.ok().body(rsEventWithoutUsers);
+        return  ResponseEntity.ok().body(rsEvents);
     }
 
     @GetMapping("/rs/list")
+    @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity getAllRsEvent() {
-        List<RsEventWithoutUser> rsEventWithoutUsers = getRsEventWithoutUsers(rsList);
-        return ResponseEntity.ok().body(rsEventWithoutUsers);
+
+        return  ResponseEntity.ok().body(rsList);
     }
+
 
 
     @PostMapping("/rs/event")
@@ -106,13 +107,4 @@ public class RsController {
         return ResponseEntity.badRequest().body(commentError);
     }
 
-
-    private List<RsEventWithoutUser> getRsEventWithoutUsers(List<RsEvent> rsList) {
-        List<RsEventWithoutUser> rsEventWithoutUsers = new ArrayList<>();
-        for (RsEvent rsEvent : rsList) {
-            RsEventWithoutUser rsEventWithoutUser = new RsEventWithoutUser(rsEvent.getEventName(), rsEvent.getKeyWord());
-            rsEventWithoutUsers.add(rsEventWithoutUser);
-        }
-        return rsEventWithoutUsers;
-    }
 }
