@@ -72,7 +72,8 @@ class RsControllerTest {
 
     @Test
     void should_add_one_rs_event() throws Exception {
-        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济");
+        UserDto user=new UserDto("guhao1",18,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济",user);
         ObjectMapper objectMapper=new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
         mockMVC.perform(get("/rs/list"))
@@ -280,6 +281,39 @@ class RsControllerTest {
                 .andExpect(jsonPath("$",hasSize(4)));
     }
 
+
+
+    @Test
+    void should_not_add_one_rs_when_rs_eventName_is_null() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent(null,"经济", userDto);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_add_one_rs_when_rs_eventName_keyWord_is_null() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("","经济", userDto);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void should_not_add_one_rs_when_rs_user_is_null() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","12345678910");
+        RsEvent rsEvent=new RsEvent("猪肉涨价了","经济", null);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
 
 }
