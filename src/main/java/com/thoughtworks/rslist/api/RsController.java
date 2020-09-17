@@ -5,11 +5,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.UserList;
+import com.thoughtworks.rslist.entity.RsEventEntity;
+import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exception.CommentError;
 import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +23,20 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class RsController {
     Logger logger = LoggerFactory.getLogger(RsController.class);
     private List<RsEvent> rsList = initRsList();
 
+    UserRepository userRepository;
+    RsEventRepository rsEventRepository;
+
+    public RsController(UserRepository userRepository, RsEventRepository rsEventRepository) {
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+    }
 
     private List<RsEvent> initRsList() {
         List<RsEvent> tempList = new ArrayList<>();
@@ -65,20 +79,16 @@ public class RsController {
 
     @PostMapping("/rs/event")
     public ResponseEntity addOneRsEvent(@RequestBody @Valid RsEvent rsEvent) throws JsonProcessingException {
-        rsList.add(rsEvent);
-        UserDto userDto = rsEvent.getUserDto();
-        if (userDto != null) {
-            boolean isRegisterd = false;
-            for (UserDto registerUserDto : UserList.userList) {
-                if (registerUserDto.getUserName().equals(userDto.getUserName())) {
-                    isRegisterd = true;
-                }
-            }
-            if (!isRegisterd) {
-                UserList.userList.add(userDto);
-            }
+
+        Optional<UserEntity> user = userRepository.findById(rsEvent.getUserId());
+
+        if(!user.isPresent()){
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.status(201).header("index", String.valueOf(rsList.size() - 1)).build();
+        RsEventEntity rsEventEntity = CommonUtils.converRsDtoToEntity(rsEvent);
+        rsEventRepository.save(rsEventEntity);
+
+        return ResponseEntity.status(201).build();
     }
 
     @PutMapping("/rs/event")
