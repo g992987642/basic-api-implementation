@@ -20,12 +20,8 @@ public class RsEvent {
 
     public interface RsViewWithUser extends RsViewWithoutUser {}
 
-    @NotEmpty
     private String eventName;
-    @NotEmpty
     private String keyWord;
-    @Valid
-    @NotNull
     private UserDto userDto;
     @NotNull
     private int userId;
@@ -35,7 +31,7 @@ public class RsEvent {
         this.keyWord = keyWord;
     }
 
-    public RsEvent(@NotEmpty String eventName, @NotEmpty String keyWord, @Valid @NotNull UserDto userDto) {
+    public RsEvent( String eventName,  String keyWord,  UserDto userDto) {
         this.eventName = eventName;
         this.keyWord = keyWord;
         this.userDto = userDto;

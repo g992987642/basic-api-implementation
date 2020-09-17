@@ -107,8 +107,24 @@ public class RsController {
     @DeleteMapping("/rs/event/{id}")
     @Transactional
     public ResponseEntity deleteEventById(@PathVariable int id)  {
-       // userRepository.deleteById(id);
-        userRepository.deleteAllById(id);
+        userRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/rs/{rsEventId}")
+    public ResponseEntity modifyEventById(@PathVariable int rsEventId,@RequestBody @Valid RsEvent rsEvent)  {
+        Optional<RsEventEntity> rsEventEntityOptional = rsEventRepository.findById(rsEventId);
+        if(!rsEventEntityOptional.isPresent()||rsEvent.getUserId()!=rsEventEntityOptional.get().getUserEntity().getId()){
+            ResponseEntity.badRequest().build();
+        }
+        RsEventEntity rsEventEntity = rsEventEntityOptional.get();
+        if(rsEvent.getEventName()!=null){
+            rsEventEntity.setEventName(rsEvent.getEventName());
+        }
+        if(rsEvent.getKeyWord()!=null){
+            rsEventEntity.setEventName(rsEvent.getKeyWord());
+        }
+        rsEventRepository.save(rsEventEntity);
         return ResponseEntity.ok().build();
     }
 

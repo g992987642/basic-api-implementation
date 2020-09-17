@@ -19,7 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.*;
@@ -429,33 +431,91 @@ class RsControllerTest {
                 .userName("guhao")
                 .age(18)
                 .email("1234123@qq.com")
-                .gender("男")
+                .gender("nan")
                 .phone("12345678910")
                 .voteNum(10)
                 .build();
         UserEntity userEntity = CommonUtils.convertUserDtoToEntity(userDto);
         userRepository.save(userEntity);
 
-        RsEvent rsEvent=  RsEvent.builder().eventName("热搜事件名称1")
-                .keyWord("关键字")
+        RsEvent rsEvent=  RsEvent.builder().eventName("ceshi1")
+                .keyWord("keyword")
                 .userId(1)
                 .userDto(userDto)
                 .build();
         RsEventEntity rsEventEntity1 = CommonUtils.converRsDtoToEntity(rsEvent);
-        RsEvent rsEvent2=  RsEvent.builder().eventName("热搜事件名称2")
-                .keyWord("关键字")
+        userEntity.setRsEvents(new ArrayList<RsEventEntity>());
+        rsEventEntity1.setUserEntity(userEntity);
+        rsEventRepository.save(rsEventEntity1);
+
+        RsEvent rsEvent2=  RsEvent.builder().eventName("ceshi2")
+                .keyWord("keyword")
                 .userId(1)
                 .userDto(userDto)
                 .build();
-        RsEventEntity rsEventEntity2 = CommonUtils.converRsDtoToEntity(rsEvent);
-        rsEventRepository.save(rsEventEntity1);
+        RsEventEntity rsEventEntity2 = CommonUtils.converRsDtoToEntity(rsEvent2);
+        rsEventEntity2.setUserEntity(userEntity);
         rsEventRepository.save(rsEventEntity2);
+
+
+        List<RsEventEntity> beForeDeleteRsEvents = rsEventRepository.findAll();
+        assertEquals(2,beForeDeleteRsEvents.size());
 
         mockMVC.perform(delete("/rs/event/1"))
                 .andExpect(status().is(200));
         List<RsEventEntity> rsEvents = rsEventRepository.findAll();
         assertEquals(0,rsEvents.size());
     }
+
+    @Test
+    void should_modify_rsEvent_when_userId_is_exsit() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .userName("guhao")
+                .age(18)
+                .email("1234123@qq.com")
+                .gender("nan")
+                .phone("12345678910")
+                .voteNum(10)
+                .build();
+        UserEntity userEntity = CommonUtils.convertUserDtoToEntity(userDto);
+        userRepository.save(userEntity);
+
+        RsEvent rsEvent=  RsEvent.builder().eventName("ceshi1")
+                .keyWord("keyword")
+                .userId(1)
+                .userDto(userDto)
+                .build();
+        RsEventEntity rsEventEntity1 = CommonUtils.converRsDtoToEntity(rsEvent);
+        userEntity.setRsEvents(new ArrayList<RsEventEntity>());
+        rsEventEntity1.setUserEntity(userEntity);
+        rsEventRepository.save(rsEventEntity1);
+
+        RsEvent rsEvent2=  RsEvent.builder().eventName("ceshi2")
+                .keyWord("keyword")
+                .userId(1)
+                .userDto(userDto)
+                .build();
+        RsEventEntity rsEventEntity2 = CommonUtils.converRsDtoToEntity(rsEvent2);
+        rsEventEntity2.setUserEntity(userEntity);
+        rsEventRepository.save(rsEventEntity2);
+
+        RsEvent modifyRsEvent=  RsEvent.builder().eventName("modify")
+                .userId(1)
+                .build();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String modifyRsEventJson = objectMapper.writeValueAsString(modifyRsEvent);
+
+
+        mockMVC.perform(patch("/rs/2").content(modifyRsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200));
+
+        Optional<RsEventEntity> afterModifyRsEventEntity= rsEventRepository.findById(2);
+        assertEquals("modify",afterModifyRsEventEntity.get().getEventName());
+
+
+    }
+
 
 
 }
