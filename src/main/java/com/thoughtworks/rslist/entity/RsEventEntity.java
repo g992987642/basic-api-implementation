@@ -13,7 +13,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
 public class RsEventEntity {
     @Id
     @GeneratedValue

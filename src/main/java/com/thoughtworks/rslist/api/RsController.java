@@ -13,6 +13,7 @@ import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VotesRepository;
+import com.thoughtworks.rslist.response.RsEventResponse;
 import com.thoughtworks.rslist.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,6 @@ import java.util.Optional;
 @RestController
 public class RsController {
     Logger logger = LoggerFactory.getLogger(RsController.class);
-    private List<RsEvent> rsList = initRsList();
 
     UserRepository userRepository;
     RsEventRepository rsEventRepository;
@@ -41,43 +41,35 @@ public class RsController {
         this.votesRepository = votesRepository;
     }
 
-    private List<RsEvent> initRsList() {
-        List<RsEvent> tempList = new ArrayList<>();
-        tempList.add(new RsEvent("第一条事件", "无分类"));
-        tempList.add(new RsEvent("第二条事件", "无分类"));
-        tempList.add(new RsEvent("第三条事件", "无分类"));
-
-        return tempList;
-    }
 
 
     @GetMapping("/rs/{index}")
-    @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity getRsEvent(@PathVariable int index) {
-        if(index<=0||index>rsList.size()){
+        List<RsEventEntity> allRsEventEntity = rsEventRepository.findAll();
+        if(index<=0||index>allRsEventEntity.size()){
             throw  new InvalidIndexException();
         }
-        RsEvent rsEvent = rsList.get(index - 1);
-        return ResponseEntity.ok().body(rsEvent);
+        RsEventEntity rsEventEntity = allRsEventEntity.get(index - 1);
+        RsEventResponse rsEventResponse = CommonUtils.convertRsEntityToResponse(rsEventEntity);
+        return ResponseEntity.ok().body(rsEventResponse);
     }
 
     @GetMapping("/rs/event")
-    @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity  getRsEventByRange(@RequestParam int start, @RequestParam int end) {
-        if(start<=0||start>end||end>rsList.size()){
+        List<RsEventEntity> allRsEventEntity = rsEventRepository.findAll();
+        if(start<=0||start>end||end>allRsEventEntity.size()){
             throw new InvalidRequestParamException();
         }
-        List<RsEvent> rsEvents = rsList.subList(start - 1, end);
-        return  ResponseEntity.ok().body(rsEvents);
+        List<RsEventEntity> rsEventsEventList = allRsEventEntity.subList(start - 1, end);
+        List<RsEventResponse> rsEventResponseList = CommonUtils.convertRsEntityListToResponseList(rsEventsEventList);
+        return  ResponseEntity.ok().body(rsEventResponseList);
     }
 
     @GetMapping("/rs/list")
-    @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity getAllRsEvent() {
-        List<RsEventEntity> all = rsEventRepository.findAll();
-
-        //TODO，把Entity改成DTO再传
-        return  ResponseEntity.ok().body(all);
+        List<RsEventEntity> RsEventEntityList = rsEventRepository.findAll();
+        List<RsEventResponse> rsEventResponseList = CommonUtils.convertRsEntityListToResponseList(RsEventEntityList);
+        return  ResponseEntity.ok().body(rsEventResponseList);
     }
 
 
@@ -85,37 +77,55 @@ public class RsController {
     @PostMapping("/rs/event")
     public ResponseEntity addOneRsEvent(@RequestBody @Valid RsEvent rsEvent) throws JsonProcessingException {
 
+
         Optional<UserEntity> user = userRepository.findById(rsEvent.getUserId());
 
         if(!user.isPresent()){
             return ResponseEntity.badRequest().build();
         }
-        RsEventEntity rsEventEntity = CommonUtils.converRsDtoToEntity(rsEvent);
+        RsEventEntity rsEventEntity = CommonUtils.convertRsDtoToEntity(rsEvent);
         rsEventRepository.save(rsEventEntity);
 
         return ResponseEntity.status(201).build();
     }
 
     @PutMapping("/rs/event")
-    public ResponseEntity modifyOneRsEvent(@RequestParam int index, @RequestParam(required = false) String eventName, @RequestParam String keyWord) throws JsonProcessingException {
-        RsEvent rsEvent = rsList.get(index - 1);
+    public ResponseEntity modifyOneRsEventByIndex(@RequestParam int index, @RequestParam(required = false) String eventName, @RequestParam String keyWord)  {
+
+        List<RsEventEntity> RsEventEntityList = rsEventRepository.findAll();
+        RsEventEntity rsEventEntity = RsEventEntityList.get(index - 1);
+
         if (eventName != null) {
-            rsEvent.setEventName(eventName);
+            rsEventEntity.setEventName(eventName);
         }
         if (keyWord != null) {
-            rsEvent.setKeyWord(keyWord);
+            rsEventEntity.setKeyword(keyWord);
         }
+        rsEventRepository.save(rsEventEntity);
+
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/rs/event/{id}")
+    @DeleteMapping("/rs/event/index/{index}")
+    @Transactional
+    public ResponseEntity deleteEventByIndex(@PathVariable int index)  {
+        List<RsEventEntity> rsEventEntityList = rsEventRepository.findAll();
+        Integer rsEventEntityId = rsEventEntityList.get(index - 1).getId();
+        rsEventRepository.deleteById(rsEventEntityId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/rs/event/userId/{id}")
     @Transactional
     public ResponseEntity deleteEventById(@PathVariable int id)  {
         userRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
+
+
     @PatchMapping("/rs/{rsEventId}")
+    @Transactional
     public ResponseEntity modifyEventById(@PathVariable int rsEventId,@RequestBody @Valid RsEvent rsEvent)  {
         Optional<RsEventEntity> rsEventEntityOptional = rsEventRepository.findById(rsEventId);
         if(!rsEventEntityOptional.isPresent()||rsEvent.getUserId()!=rsEventEntityOptional.get().getUserEntity().getId()){
@@ -160,8 +170,8 @@ public class RsController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity handleException(MethodArgumentNotValidException ex) {
+    @ExceptionHandler({MethodArgumentNotValidException.class,AssertionError.class})
+    public ResponseEntity handleException(Exception ex) {
         CommentError commentError = new CommentError("invalid param");
         logger.error("[LOGGING]:" + commentError.getError());
         return ResponseEntity.badRequest().body(commentError);
