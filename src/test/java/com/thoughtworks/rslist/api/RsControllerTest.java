@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -416,7 +418,7 @@ class RsControllerTest {
         Vote vote = Vote.builder()
                 .voteNum(5)
                 .userId(1)
-                .voteTime(new Date(new java.util.Date().getTime()))
+                .voteTime(new Timestamp(System.currentTimeMillis()))
                 .rsEventId(2)
                 .build();
         ObjectMapper objectMapper = new ObjectMapper();

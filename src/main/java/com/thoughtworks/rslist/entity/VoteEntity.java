@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,7 +24,7 @@ public class VoteEntity {
     Integer id;
     int voteNum;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    Date voteTime;
+    Timestamp voteTime;
     int userId;
     int rsEventId;
 

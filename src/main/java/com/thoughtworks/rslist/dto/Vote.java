@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
 @NoArgsConstructor
@@ -15,7 +17,7 @@ public class Vote {
 
     @NotNull
      int voteNum;
-    Date voteTime;
+    Timestamp voteTime;
     @NotNull
     int userId;
     @NotNull
