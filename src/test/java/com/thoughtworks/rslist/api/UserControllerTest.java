@@ -6,6 +6,9 @@ import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.utils.CommonUtils;
+import org.aspectj.lang.annotation.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,7 @@ class UserControllerTest {
     void initDataBase (){
         userRepository.deleteAll();
     }
+
     @Test
     void should_not_add_one_user_when_user_name_is_null() throws Exception {
 
@@ -139,10 +143,14 @@ class UserControllerTest {
 
     @Test
     void should_get_all_users() throws Exception {
+
+        UserDto userDto = new UserDto("12345678",100,"男","12345678@qq.com","12345678910");
+        UserEntity userEntity = CommonUtils.convertUserDtoToEntity(userDto);
+        userRepository.save(userEntity);
         mockMVC.perform(get("/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].user_name",is("guhao")))
-                .andExpect(jsonPath("$[0].user_age",is(18)))
+                .andExpect(jsonPath("$[0].user_name",is("12345678")))
+                .andExpect(jsonPath("$[0].user_age",is(100)))
                 .andExpect(jsonPath("$[0].user_gender",is("男")))
                 .andExpect(jsonPath("$[0].user_email",is("12345678@qq.com")))
                 .andExpect(jsonPath("$[0].user_phone",is("12345678910")));
@@ -185,14 +193,12 @@ class UserControllerTest {
 
         userRepository.save(userEntity);
 
+
         mockMVC.perform(get("/user/1")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id",is(userEntity.getId())))
-                .andExpect(jsonPath("$.userName",is(userEntity.getUserName())))
-                .andExpect(jsonPath("$.age",is(userEntity.getAge())))
-                .andExpect(jsonPath("$.email",is(userEntity.getEmail())))
-                .andExpect(jsonPath("$.gender",is(userEntity.getGender())))
-                .andExpect(jsonPath("$.phone",is(userEntity.getPhone())))
-                .andExpect(jsonPath("$.voteNum",is(userEntity.getVoteNum())));
+                .andExpect(jsonPath("$.user_age",is(userEntity.getAge())))
+                .andExpect(jsonPath("$.user_email",is(userEntity.getEmail())))
+                .andExpect(jsonPath("$.user_gender",is(userEntity.getGender())))
+                .andExpect(jsonPath("$.user_phone",is(userEntity.getPhone())));
 
 
     }
