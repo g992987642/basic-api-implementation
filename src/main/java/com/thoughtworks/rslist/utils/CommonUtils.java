@@ -2,8 +2,10 @@ package com.thoughtworks.rslist.utils;
 
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.dto.Vote;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.entity.VoteEntity;
 
 public  class CommonUtils {
 
@@ -23,11 +25,24 @@ public  class CommonUtils {
     public static RsEventEntity converRsDtoToEntity(RsEvent rsEvent){
         RsEventEntity rsEventEntity= RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())
-                .id(rsEvent.getUserId())
                 .keyword(rsEvent.getKeyWord())
+                .voteNum(rsEvent.getVotesNum())
                 .build();
 
         return rsEventEntity;
     }
+
+    public static VoteEntity converVotesToEntity(Vote votes, int rsEventId){
+        VoteEntity votesEntity= VoteEntity.builder()
+                .userId(votes.getUserId())
+                .voteNum(votes.getVoteNum())
+                .voteTime(votes.getVoteTime())
+                .rsEventId(rsEventId)
+                .build();
+        return votesEntity;
+    }
+
+
+
 
 }

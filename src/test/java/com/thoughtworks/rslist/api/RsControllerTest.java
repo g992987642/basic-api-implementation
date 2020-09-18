@@ -3,14 +3,13 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
-import com.thoughtworks.rslist.dto.UserList;
+import com.thoughtworks.rslist.dto.Vote;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.repository.VotesRepository;
 import com.thoughtworks.rslist.utils.CommonUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,12 +41,15 @@ class RsControllerTest {
     UserRepository userRepository;
     @Autowired
     RsEventRepository rsEventRepository;
+    @Autowired
+    VotesRepository votesRepository;
 
-    @BeforeEach
-    void initDataBase() {
-        rsEventRepository.deleteAll();
-        userRepository.deleteAll();
-    }
+//    @BeforeEach
+//    void initDataBase() {
+//        rsEventRepository.deleteAll();
+//        userRepository.deleteAll();
+//        votesRepository.deleteAll();
+//    }
 
     @Test
     void should_get_one_rs_event() throws Exception {
@@ -155,6 +159,7 @@ class RsControllerTest {
 
     }
 
+    //TODO
     @Test
     void should_delete_one_event() throws Exception {
         mockMVC.perform(get("/rs/list"))
@@ -326,6 +331,7 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.error", is("invalid index")));
     }
 
+    //TODO
     @Test
     void should_return_invalid_param_when_rsEvent_can_not_pass_valid() throws Exception {
 
@@ -512,6 +518,62 @@ class RsControllerTest {
 
         Optional<RsEventEntity> afterModifyRsEventEntity= rsEventRepository.findById(2);
         assertEquals("modify",afterModifyRsEventEntity.get().getEventName());
+
+
+    }
+
+
+
+    @Test
+    void should_vote_for_rsEvent() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .userName("guhao")
+                .age(18)
+                .email("1234123@qq.com")
+                .gender("nan")
+                .phone("12345678910")
+                .voteNum(10)
+                .build();
+        UserEntity userEntity = CommonUtils.convertUserDtoToEntity(userDto);
+        userRepository.save(userEntity);
+
+        RsEvent rsEvent=  RsEvent.builder().eventName("ceshi1")
+                .keyWord("keyword")
+                .userId(1)
+                .userDto(userDto)
+                .build();
+        RsEventEntity rsEventEntity1 = CommonUtils.converRsDtoToEntity(rsEvent);
+        userEntity.setRsEvents(new ArrayList<RsEventEntity>());
+        rsEventEntity1.setUserEntity(userEntity);
+        rsEventRepository.save(rsEventEntity1);
+
+        RsEvent rsEvent2=  RsEvent.builder().eventName("ceshi2")
+                .keyWord("keyword")
+                .userId(1)
+                .userDto(userDto)
+                .build();
+        RsEventEntity rsEventEntity2 = CommonUtils.converRsDtoToEntity(rsEvent2);
+        rsEventEntity2.setUserEntity(userEntity);
+        rsEventRepository.save(rsEventEntity2);
+
+        Vote vote= Vote.builder()
+                .voteNum(5)
+                .userId(1)
+                .voteTime(new Date(new java.util.Date().getTime()))
+                .rsEventId(2)
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String votesJson = objectMapper.writeValueAsString(vote);
+
+        mockMVC.perform(post("/rs/vote/2").content(votesJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200));
+
+        Optional<UserEntity> userEntityOptional = userRepository.findById(1);
+        UserEntity modifiedUserEntity = userEntityOptional.get();
+        Optional<RsEventEntity> rsEventEntityOptional = rsEventRepository.findById(2);
+        RsEventEntity modifiedRsEventEntity = rsEventEntityOptional.get();
+        assertEquals(5,modifiedUserEntity.getVoteNum());
+        assertEquals(5,modifiedRsEventEntity.getVoteNum());
 
 
     }

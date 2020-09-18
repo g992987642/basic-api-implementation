@@ -3,19 +3,19 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoughtworks.rslist.dto.RsEvent;
-import com.thoughtworks.rslist.dto.UserDto;
-import com.thoughtworks.rslist.dto.UserList;
+import com.thoughtworks.rslist.dto.Vote;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.exception.CommentError;
 import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.repository.VotesRepository;
 import com.thoughtworks.rslist.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,10 +33,12 @@ public class RsController {
 
     UserRepository userRepository;
     RsEventRepository rsEventRepository;
+    VotesRepository votesRepository;
 
-    public RsController(UserRepository userRepository, RsEventRepository rsEventRepository) {
+    public RsController(UserRepository userRepository, RsEventRepository rsEventRepository, VotesRepository votesRepository) {
         this.userRepository = userRepository;
         this.rsEventRepository = rsEventRepository;
+        this.votesRepository = votesRepository;
     }
 
     private List<RsEvent> initRsList() {
@@ -72,8 +74,10 @@ public class RsController {
     @GetMapping("/rs/list")
     @JsonView(RsEvent.RsViewWithoutUser.class)
     public ResponseEntity getAllRsEvent() {
+        List<RsEventEntity> all = rsEventRepository.findAll();
 
-        return  ResponseEntity.ok().body(rsList);
+        //TODO，把Entity改成DTO再传
+        return  ResponseEntity.ok().body(all);
     }
 
 
@@ -128,6 +132,33 @@ public class RsController {
         return ResponseEntity.ok().build();
     }
 
+
+
+    @PostMapping("/rs/vote/{rsEventId}")
+    @Transactional
+    public ResponseEntity voteForRsEventById(@PathVariable Integer rsEventId, @RequestBody @Valid Vote vote)  {
+        Optional<UserEntity> userEntityOptional = userRepository.findById(vote.getUserId());
+        Optional<RsEventEntity> rsEventEntityOptional = rsEventRepository.findById(rsEventId);
+        int prepareToVoteNum=vote.getVoteNum();
+        if(!userEntityOptional.isPresent()
+                ||!rsEventEntityOptional.isPresent()
+                ||prepareToVoteNum<0
+                ||prepareToVoteNum>userEntityOptional.get().getVoteNum()){
+            return  ResponseEntity.badRequest().build();
+        }
+        UserEntity userEntity = userEntityOptional.get();
+        userEntity.setVoteNum(userEntity.getVoteNum()-prepareToVoteNum);
+
+        RsEventEntity rsEventEntity=rsEventEntityOptional.get();
+        rsEventEntity.setVoteNum(rsEventEntity.getVoteNum()+prepareToVoteNum);
+
+        VoteEntity votesEntity = CommonUtils.converVotesToEntity(vote,rsEventId);
+
+        userRepository.save(userEntity);
+        rsEventRepository.save(rsEventEntity);
+        votesRepository.save(votesEntity);
+        return ResponseEntity.ok().build();
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleException(MethodArgumentNotValidException ex) {

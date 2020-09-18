@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 
@@ -25,6 +23,7 @@ public class RsEvent {
     private UserDto userDto;
     @NotNull
     private int userId;
+    private int votesNum;
 
     public RsEvent(String eventName, String keyWord) {
         this.eventName = eventName;
@@ -35,6 +34,13 @@ public class RsEvent {
         this.eventName = eventName;
         this.keyWord = keyWord;
         this.userDto = userDto;
+    }
+
+    public RsEvent(String eventName, String keyWord, UserDto userDto, @NotNull int userId) {
+        this.eventName = eventName;
+        this.keyWord = keyWord;
+        this.userDto = userDto;
+        this.userId = userId;
     }
 
     @JsonView(RsViewWithoutUser.class)
@@ -52,5 +58,9 @@ public class RsEvent {
     @JsonView(RsViewWithUser.class)
     public int getUserId() {
         return userId;
+    }
+    @JsonView(RsViewWithUser.class)
+    public int getVotesNum() {
+        return votesNum;
     }
 }
