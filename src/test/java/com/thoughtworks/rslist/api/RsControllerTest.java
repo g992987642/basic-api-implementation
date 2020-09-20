@@ -84,14 +84,14 @@ class RsControllerTest {
 
     @AfterEach
     void clearDataBase() {
-        rsEventRepository.deleteAll();
         userRepository.deleteAll();
+        rsEventRepository.deleteAll();
         votesRepository.deleteAll();
     }
 
     @Test
     void should_get_one_rs_event() throws Exception {
-        mockMVC.perform(get("/rs/1"))
+        mockMVC.perform(get("/rsEvent/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.eventName", is("ceshi1")))
                 .andExpect(jsonPath("$.keyword", is("keyword")))
@@ -100,7 +100,7 @@ class RsControllerTest {
 
     @Test
     void should_get_rs_event_by_range() throws Exception {
-        mockMVC.perform(get("/rs/event?start=1&end=2"))
+        mockMVC.perform(get("/rsEvent?start=1&end=2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].eventName", is("ceshi1")))
@@ -114,7 +114,7 @@ class RsControllerTest {
 
     @Test
     void should_get_all_event() throws Exception {
-        mockMVC.perform(get("/rs/list"))
+        mockMVC.perform(get("/rsEvents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].eventName", is("ceshi1")))
@@ -132,13 +132,13 @@ class RsControllerTest {
         RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", user, 1);
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
-        mockMVC.perform(get("/rs/list"))
+        mockMVC.perform(get("/rsEvents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
-        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(post("/rsEvent").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(201));
 
-        mockMVC.perform(get("/rs/list"))
+        mockMVC.perform(get("/rsEvents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
 
@@ -146,7 +146,7 @@ class RsControllerTest {
 
     @Test
     void should_modify_one_event() throws Exception {
-        mockMVC.perform(get("/rs/list"))
+        mockMVC.perform(get("/rsEvents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].eventName", is("ceshi1")))
@@ -156,10 +156,10 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[1].keyword", is("keyword")))
                 .andExpect(jsonPath("$[1]", not(hasKey("userDto"))));
 
-        mockMVC.perform(put("/rs/event?index=1&keyWord=哈哈"))
+        mockMVC.perform(put("/rsEvent?index=1&keyWord=哈哈"))
                 .andExpect(status().isOk());
 
-        mockMVC.perform(get("/rs/list"))
+        mockMVC.perform(get("/rsEvents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].eventName", is("ceshi1")))
@@ -174,7 +174,7 @@ class RsControllerTest {
 
     @Test
     void should_delete_one_event() throws Exception {
-        mockMVC.perform(get("/rs/list"))
+        mockMVC.perform(get("/rsEvents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].eventName", is("ceshi1")))
@@ -184,10 +184,10 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[1].keyword", is("keyword")))
                 .andExpect(jsonPath("$[1]", not(hasKey("userDto"))));
 
-        mockMVC.perform(delete("/rs/event/index/2"))
+        mockMVC.perform(delete("/rsEvent/index/2"))
                 .andExpect(status().isOk());
 
-        mockMVC.perform(get("/rs/list"))
+        mockMVC.perform(get("/rsEvents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].eventName", is("ceshi1")))
@@ -292,14 +292,14 @@ class RsControllerTest {
 
     @Test
     void should_return_invalid_request_param_when_start_or_end_out_of_index() throws Exception {
-        mockMVC.perform(get("/rs/event?start=-1&end=3"))
+        mockMVC.perform(get("/rsEvent?start=-1&end=3"))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.error", is("invalid request param")));
     }
 
     @Test
     void should_return_invalid_request_param_when_index_is_not_invalid() throws Exception {
-        mockMVC.perform(get("/rs/0"))
+        mockMVC.perform(get("/rsEvent/0"))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.error", is("invalid index")));
     }
@@ -312,7 +312,7 @@ class RsControllerTest {
         RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", userDto);
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
-        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(post("/rsEvent").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));
               // .andExpect(jsonPath("$.error", is("invalid param")));
     }
@@ -325,7 +325,7 @@ class RsControllerTest {
         RsEvent rsEvent = new RsEvent(null, "经济", userDto);
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
-        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(post("/rsEvent").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -336,7 +336,7 @@ class RsControllerTest {
         RsEvent rsEvent = new RsEvent("", "经济", userDto);
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
-        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(post("/rsEvent").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -347,7 +347,7 @@ class RsControllerTest {
         RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", null);
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
-        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(post("/rsEvent").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -363,7 +363,7 @@ class RsControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
 
-        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(post("/rsEvent").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(201));
     }
 
@@ -378,7 +378,7 @@ class RsControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
 
-        mockMVC.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(post("/rsEvent").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));
     }
 
@@ -389,7 +389,7 @@ class RsControllerTest {
         List<RsEventEntity> beForeDeleteRsEvents = rsEventRepository.findAll();
         assertEquals(2, beForeDeleteRsEvents.size());
 
-        mockMVC.perform(delete("/rs/event/userId/1"))
+        mockMVC.perform(delete("/rsEvent/userId/1"))
                 .andExpect(status().is(200));
         List<RsEventEntity> rsEvents = rsEventRepository.findAll();
         assertEquals(0, rsEvents.size());
@@ -403,7 +403,7 @@ class RsControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String modifyRsEventJson = objectMapper.writeValueAsString(modifyRsEvent);
 
-        mockMVC.perform(patch("/rs/2").content(modifyRsEventJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(patch("/rsEvent/2").content(modifyRsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200));
 
         Optional<RsEventEntity> afterModifyRsEventEntity = rsEventRepository.findById(2);
@@ -424,7 +424,7 @@ class RsControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String votesJson = objectMapper.writeValueAsString(vote);
 
-        mockMVC.perform(post("/rs/vote/2").content(votesJson).contentType(MediaType.APPLICATION_JSON))
+        mockMVC.perform(post("/rsEvent/vote/2").content(votesJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200));
 
         Optional<UserEntity> userEntityOptional = userRepository.findById(1);

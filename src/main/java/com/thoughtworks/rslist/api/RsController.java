@@ -37,27 +37,30 @@ public class RsController {
 
     private final RsService rsService;
 
-
-    @GetMapping("/rs/{index}")
+    // @GetMapping("/rs/{index}")
+    @GetMapping("/rsEvent/{index}")
     public ResponseEntity getRsEvent(@PathVariable int index) {
         RsEventResponse rsEventResponse = rsService.getRsEvent(index);
         return ResponseEntity.ok().body(rsEventResponse);
     }
 
-    @GetMapping("/rs/event")
+    // @GetMapping("/rs/event")
+    @GetMapping("/rsEvent")
     public ResponseEntity getRsEventByRange(@RequestParam int start, @RequestParam int end) {
         List<RsEventResponse> rsEventResponseList = rsService.getRsEventByRange(start, end);
         return ResponseEntity.ok().body(rsEventResponseList);
     }
 
-    @GetMapping("/rs/list")
+    //    @GetMapping("/rs/list")
+    @GetMapping("/rsEvents")
     public ResponseEntity getAllRsEvent() {
         List<RsEventResponse> rsEventResponseList = rsService.getAllRsEvent();
         return ResponseEntity.ok().body(rsEventResponseList);
     }
 
 
-    @PostMapping("/rs/event")
+    // @PostMapping("/rs/event")
+    @PostMapping("/rsEvent")
     public ResponseEntity addOneRsEvent(@RequestBody @Valid RsEvent rsEvent) throws JsonProcessingException {
         Boolean isSuccess = rsService.addOneRsEvent(rsEvent);
         if (!isSuccess) {
@@ -66,28 +69,32 @@ public class RsController {
         return ResponseEntity.status(201).build();
     }
 
-    @PutMapping("/rs/event")
+    //@PutMapping("/rs/event")
+    @PutMapping("/rsEvent")
     public ResponseEntity modifyOneRsEventByIndex(@RequestParam int index, @RequestParam(required = false) String eventName, @RequestParam String keyWord) {
         rsService.modifyOneRsEventByIndex(index, eventName, keyWord);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/rs/event/index/{index}")
+    //@DeleteMapping("/rs/event/index/{index}")
+    @DeleteMapping("/rsEvent/index/{index}")
     @Transactional
     public ResponseEntity deleteEventByIndex(@PathVariable int index) {
         rsService.deleteEventByIndex(index);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/rs/event/userId/{id}")
+    //@DeleteMapping("/rs/event/userId/{id}")
+    @DeleteMapping("/rsEvent/userId/{id}")
     @Transactional
-    public ResponseEntity deleteEventById(@PathVariable int id) {
-        rsService.deleteEventById(id);
+    public ResponseEntity deleteEventByUserId(@PathVariable int id) {
+        rsService.deleteEventByUserId(id);
         return ResponseEntity.ok().build();
     }
 
 
-    @PatchMapping("/rs/{rsEventId}")
+    //@PatchMapping("/rs/{rsEventId}")
+    @PatchMapping("/rsEvent/{rsEventId}")
     @Transactional
     public ResponseEntity modifyEventById(@PathVariable int rsEventId, @RequestBody @Valid RsEvent rsEvent) {
         Boolean isSuccess = rsService.modifyEventById(rsEventId, rsEvent);
@@ -98,7 +105,7 @@ public class RsController {
     }
 
 
-    @PostMapping("/rs/vote/{rsEventId}")
+    @PostMapping("/rsEvent/vote/{rsEventId}")
     @Transactional
     public ResponseEntity voteForRsEventById(@PathVariable Integer rsEventId, @RequestBody @Valid Vote vote) {
         Boolean isSuccess = rsService.voteForRsEventById(rsEventId, vote);

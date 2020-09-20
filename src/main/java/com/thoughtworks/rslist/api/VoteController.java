@@ -26,9 +26,6 @@ public class VoteController {
 
     @GetMapping("/votes")
     public ResponseEntity getVotesBetwenStartAndEnd(@RequestParam long start, @RequestParam long end){
-//        Timestamp startTimestamp=new Timestamp(start);
-//        Timestamp endTimestamp=new Timestamp(end);
-//        List<VoteEntity> votesList = votesRepository.findByVoteTimeBetween(startTimestamp, endTimestamp);
         List<VoteEntity> votesList = voteService.getVotesBetwenStartAndEnd(start, end);
         return ResponseEntity.ok().body(votesList);
     }

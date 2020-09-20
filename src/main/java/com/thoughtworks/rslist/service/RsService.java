@@ -30,7 +30,7 @@ public interface RsService {
 
     public void deleteEventByIndex(int index);
 
-    public void deleteEventById(int id);
+    public void deleteEventByUserId(int id);
 
     public Boolean modifyEventById(int rsEventId, RsEvent rsEvent);
 

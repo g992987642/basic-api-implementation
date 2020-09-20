@@ -96,7 +96,7 @@ public class RsServiceImpl implements RsService {
     }
 
     @Override
-    public void deleteEventById(int id) {
+    public void deleteEventByUserId(int id) {
         userRepository.deleteById(id);
     }
 
