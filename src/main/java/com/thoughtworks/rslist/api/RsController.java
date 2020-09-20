@@ -37,21 +37,18 @@ public class RsController {
 
     private final RsService rsService;
 
-    // @GetMapping("/rs/{index}")
     @GetMapping("/rsEvent/{index}")
     public ResponseEntity getRsEvent(@PathVariable int index) {
         RsEventResponse rsEventResponse = rsService.getRsEvent(index);
         return ResponseEntity.ok().body(rsEventResponse);
     }
 
-    // @GetMapping("/rs/event")
     @GetMapping("/rsEvent")
     public ResponseEntity getRsEventByRange(@RequestParam int start, @RequestParam int end) {
         List<RsEventResponse> rsEventResponseList = rsService.getRsEventByRange(start, end);
         return ResponseEntity.ok().body(rsEventResponseList);
     }
 
-    //    @GetMapping("/rs/list")
     @GetMapping("/rsEvents")
     public ResponseEntity getAllRsEvent() {
         List<RsEventResponse> rsEventResponseList = rsService.getAllRsEvent();
@@ -59,7 +56,6 @@ public class RsController {
     }
 
 
-    // @PostMapping("/rs/event")
     @PostMapping("/rsEvent")
     public ResponseEntity addOneRsEvent(@RequestBody @Valid RsEvent rsEvent) throws JsonProcessingException {
         Boolean isSuccess = rsService.addOneRsEvent(rsEvent);
@@ -69,14 +65,12 @@ public class RsController {
         return ResponseEntity.status(201).build();
     }
 
-    //@PutMapping("/rs/event")
     @PutMapping("/rsEvent")
     public ResponseEntity modifyOneRsEventByIndex(@RequestParam int index, @RequestParam(required = false) String eventName, @RequestParam String keyWord) {
         rsService.modifyOneRsEventByIndex(index, eventName, keyWord);
         return ResponseEntity.ok().build();
     }
 
-    //@DeleteMapping("/rs/event/index/{index}")
     @DeleteMapping("/rsEvent/index/{index}")
     @Transactional
     public ResponseEntity deleteEventByIndex(@PathVariable int index) {
@@ -84,7 +78,6 @@ public class RsController {
         return ResponseEntity.ok().build();
     }
 
-    //@DeleteMapping("/rs/event/userId/{id}")
     @DeleteMapping("/rsEvent/userId/{id}")
     @Transactional
     public ResponseEntity deleteEventByUserId(@PathVariable int id) {
@@ -93,7 +86,6 @@ public class RsController {
     }
 
 
-    //@PatchMapping("/rs/{rsEventId}")
     @PatchMapping("/rsEvent/{rsEventId}")
     @Transactional
     public ResponseEntity modifyEventById(@PathVariable int rsEventId, @RequestBody @Valid RsEvent rsEvent) {
